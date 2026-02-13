@@ -124,7 +124,7 @@ export default function ItemTable({
             <tr>
               <th className="col-desc">Artikel</th>
               <th className="col-price">Preis</th>
-              <th>Zuweisung</th>
+              <th className="col-assign">Zuweisung</th>
               <th className="col-actions"></th>
             </tr>
           </thead>
@@ -176,7 +176,7 @@ export default function ItemTable({
                       onSave={(v) => onUpdateItem(idx, "price", v)}
                     />
                   </td>
-                  <td>
+                  <td className="col-assign">
                     <div className="assign-cells">
                       {quantityMode ? (
                         <>

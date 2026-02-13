@@ -600,12 +600,95 @@ tbody tr:hover td {
     grid-template-columns: 1fr;
   }
 
-  .assign-cells {
-    gap: 6px;
+  .col-desc {
+    min-width: 0;
   }
 
-  .col-desc {
-    min-width: 120px;
+  /* Artikel-Tabelle: keine horizontale Scroll, Zuweisung unter Artikel/Preis */
+  .table-wrap {
+    overflow-x: visible;
+    margin: 0 -8px;
+  }
+
+  .table-wrap table {
+    min-width: 0;
+  }
+
+  .table-wrap thead tr {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .table-wrap thead th {
+    padding: 8px 4px;
+  }
+
+  .table-wrap thead th.col-desc {
+    order: 1;
+    flex: 1 1 50%;
+    min-width: 0;
+  }
+
+  .table-wrap thead th.col-price {
+    order: 2;
+    flex: 0 0 auto;
+  }
+
+  .table-wrap thead th.col-actions {
+    order: 3;
+    flex: 0 0 36px;
+  }
+
+  .table-wrap thead th.col-assign {
+    order: 4;
+    flex: 0 0 100%;
+    width: 100%;
+    padding-top: 4px;
+    border-top: 1px solid var(--border);
+  }
+
+  .table-wrap tbody tr {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: flex-start;
+    padding: 10px 4px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .table-wrap tbody td {
+    padding: 4px;
+  }
+
+  .table-wrap tbody td.col-desc {
+    order: 1;
+    flex: 1 1 50%;
+    min-width: 0;
+  }
+
+  .table-wrap tbody td.col-price {
+    order: 2;
+    flex: 0 0 auto;
+  }
+
+  .table-wrap tbody td.col-actions {
+    order: 3;
+    flex: 0 0 36px;
+  }
+
+  .table-wrap tbody td.col-assign {
+    order: 4;
+    flex: 0 0 100%;
+    width: 100%;
+    padding-top: 10px;
+    margin-top: 2px;
+    border-top: 1px solid var(--border);
+  }
+
+  .assign-cells {
+    gap: 8px;
+    flex-wrap: wrap;
   }
 }
 
