@@ -29,7 +29,10 @@ export default function Scanner({ onResult }) {
       const form = new FormData();
       form.append("receipt", file);
 
-      const res = await fetch("/api/scan", { method: "POST", body: form });
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 90000); // 90 s
+      const res = await fetch("/api/scan", { method: "POST", body: form, signal: controller.signal });
+      clearTimeout(timeoutId);
       const data = await res.json();
 
       if (!res.ok) throw new Error(data.error || "Scan fehlgeschlagen");
@@ -38,7 +41,7 @@ export default function Scanner({ onResult }) {
       setStatus("done");
       onResult(data.items, data.receiptTotal);
     } catch (err) {
-      setError(err.message);
+      setError(err.name === "AbortError" ? "Scan dauert zu lange – bitte erneut versuchen." : err.message);
       setStatus("error");
     }
   }

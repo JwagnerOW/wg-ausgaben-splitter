@@ -91,6 +91,7 @@ if (process.env.NODE_ENV === "production") {
   app.get("*", (_req, res) => res.sendFile(path.join(clientDist, "index.html")));
 }
 
-app.listen(PORT, () =>
+const server = app.listen(PORT, () =>
   console.log(`[Server] Läuft auf http://localhost:${PORT}`)
 );
+server.timeout = 60000; // 60 s für OCR (Railway-Proxy-Timeout ggf. separat erhöhen)
