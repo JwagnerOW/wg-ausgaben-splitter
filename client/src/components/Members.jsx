@@ -22,14 +22,14 @@ export default function Members({
         <span className="icon">&#128101;</span> WG-Mitglieder & Käufer
       </h2>
 
-      <div className="row">
+      <div className="row member-add-row">
         <input
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && handleAdd()}
           placeholder="Name eingeben"
-          style={{ width: 160 }}
+          className="member-input"
         />
         <button type="button" className="btn btn-primary" onClick={handleAdd}>
           Hinzufügen

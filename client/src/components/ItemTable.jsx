@@ -285,7 +285,7 @@ export default function ItemTable({
               placeholder="z.B. 114,11"
               value={receiptTotal}
               onChange={(e) => setReceiptTotalInput(e.target.value)}
-              style={{ width: 110 }}
+              className="receipt-total-input"
             />
             {totalDiff !== null && (
               <span
@@ -311,6 +311,7 @@ export default function ItemTable({
           value={newDesc}
           onChange={(e) => setNewDesc(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && handleAdd()}
+          className="add-item-desc"
         />
         <input
           type="text"
@@ -318,7 +319,7 @@ export default function ItemTable({
           value={newPrice}
           onChange={(e) => setNewPrice(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && handleAdd()}
-          style={{ width: 120 }}
+          className="add-item-price"
         />
         <button type="button" className="btn btn-primary" onClick={handleAdd}>
           Hinzufügen
