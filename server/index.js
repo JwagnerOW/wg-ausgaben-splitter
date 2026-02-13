@@ -4,6 +4,7 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 import { fileURLToPath } from "url";
+import { pdf } from "pdf-to-img";
 import { runOCR } from "./ocr.js";
 import { parseReceipt } from "./parser.js";
 
@@ -27,18 +28,38 @@ const upload = multer({
   storage,
   limits: { fileSize: 20 * 1024 * 1024 }, // 20 MB
   fileFilter: (_req, file, cb) => {
-    if (file.mimetype.startsWith("image/")) cb(null, true);
-    else cb(new Error("Nur Bilddateien sind erlaubt."));
+    if (file.mimetype.startsWith("image/") || file.mimetype === "application/pdf") cb(null, true);
+    else cb(new Error("Nur Bilder (JPG, PNG, …) oder PDF sind erlaubt."));
   },
 });
 
+/** PDF: erste Seite als PNG extrahieren, Pfad zurückgeben. Sonst original path. */
+async function toImagePath(filePath, mimetype) {
+  if (mimetype !== "application/pdf") return filePath;
+  const outPath = filePath + ".page1.png";
+  const doc = pdf(filePath, { scale: 2 });
+  for await (const img of doc) {
+    await fs.promises.writeFile(outPath, img);
+    return outPath;
+  }
+  throw new Error("PDF enthält keine Seiten.");
+}
+
 // --- API: Scan receipt ---
 app.post("/api/scan", upload.single("receipt"), async (req, res) => {
-  if (!req.file) return res.status(400).json({ error: "Kein Bild hochgeladen." });
+  if (!req.file) return res.status(400).json({ error: "Kein Bild oder PDF hochgeladen." });
+
+  let imagePath = req.file.path;
+  let tempPdfImage = null;
 
   try {
+    if (req.file.mimetype === "application/pdf") {
+      console.log(`[OCR] PDF erkannt, konvertiere erste Seite …`);
+      imagePath = await toImagePath(req.file.path, req.file.mimetype);
+      tempPdfImage = imagePath;
+    }
     console.log(`[OCR] Verarbeite ${req.file.filename} …`);
-    const rawText = await runOCR(req.file.path);
+    const rawText = await runOCR(imagePath);
     console.log(`[OCR] Text extrahiert (${rawText.length} Zeichen)`);
 
     const { items, receiptTotal } = parseReceipt(rawText);
@@ -48,6 +69,8 @@ app.post("/api/scan", upload.single("receipt"), async (req, res) => {
   } catch (err) {
     console.error("[Scan-Fehler]", err);
     res.status(500).json({ error: "Fehler beim Scannen: " + err.message });
+  } finally {
+    if (tempPdfImage) await fs.promises.unlink(tempPdfImage).catch(() => {});
   }
 });
 

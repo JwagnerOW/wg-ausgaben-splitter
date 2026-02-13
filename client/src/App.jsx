@@ -6,7 +6,7 @@ import Settlement from "./components/Settlement";
 import { Impressum, Datenschutz } from "./components/Legal";
 
 export default function App() {
-  const [members, setMembers] = useState(["Max", "Erika", "Tom"]);
+  const [members, setMembers] = useState([]);
   const [buyer, setBuyer] = useState(0);
   const [items, setItems] = useState([]);
   const [assignments, setAssignments] = useState({});

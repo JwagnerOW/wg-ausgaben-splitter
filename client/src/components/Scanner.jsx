@@ -10,8 +10,10 @@ export default function Scanner({ onResult }) {
   const fileRef = useRef(null);
 
   async function handleFile(file) {
-    if (!file || !file.type.startsWith("image/")) {
-      setError("Bitte ein Bild hochladen (JPG, PNG, etc.).");
+    const isImage = file?.type?.startsWith("image/");
+    const isPdf = file?.type === "application/pdf";
+    if (!file || (!isImage && !isPdf)) {
+      setError("Bitte ein Bild (JPG, PNG, …) oder eine PDF-Datei hochladen.");
       setStatus("error");
       return;
     }
@@ -72,15 +74,15 @@ export default function Scanner({ onResult }) {
         <input
           ref={fileRef}
           type="file"
-          accept="image/*"
+          accept="image/*,application/pdf"
           onChange={onInputChange}
           style={{ display: "none" }}
         />
         <div className="icon-upload">&#128206;</div>
         <p>
-          <strong>Bild hochladen</strong> oder hierher ziehen
+          <strong>Bild oder PDF hochladen</strong> oder hierher ziehen
         </p>
-        <p>JPG, PNG – am besten gut belichtetes Foto des Kassenzettels</p>
+        <p>JPG, PNG oder PDF – gut belichtetes Foto oder Scan des Kassenzettels</p>
       </div>
 
       {preview && <img src={preview} alt="Vorschau" className="preview-img" />}

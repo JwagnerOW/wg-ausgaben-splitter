@@ -17,11 +17,12 @@ async function preprocessVariants(imagePath) {
   const h = meta.height || 600;
   console.log(`  [Sharp] Original: ${w}x${h}`);
 
-  // Base pipeline: upscale small images
+  // Base pipeline: upscale small/dense receipts so Tesseract can read small font
+  const minWidth = 2000;
   function basePipeline() {
     let p = sharp(imagePath);
-    if (w < 1000) {
-      const scale = Math.ceil(1400 / w);
+    if (w < minWidth) {
+      const scale = Math.ceil(minWidth / w);
       p = p.resize({
         width: w * scale,
         height: h * scale,
