@@ -320,14 +320,22 @@ thead th {
 }
 
 tbody td {
-  padding: 10px;
+  padding: 14px 10px;
   font-size: 0.92rem;
   vertical-align: middle;
   border-bottom: 1px solid var(--border);
 }
 
+tbody tr:nth-child(odd) td {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+tbody tr:nth-child(even) td {
+  background: transparent;
+}
+
 tbody tr:hover td {
-  background: rgba(255, 255, 255, 0.015);
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .col-desc {
@@ -653,12 +661,30 @@ tbody tr:hover td {
     flex-wrap: wrap;
     gap: 8px;
     align-items: flex-start;
-    padding: 10px 4px;
-    border-bottom: 1px solid var(--border);
+    padding: 12px 8px;
+    margin-bottom: 8px;
+    border-bottom: none;
+    border-radius: var(--radius-sm);
+    background: var(--surface2);
+    border: 1px solid var(--border);
+  }
+
+  .table-wrap tbody tr:nth-child(odd),
+  .table-wrap tbody tr:nth-child(even) {
+    background: var(--surface2);
+  }
+
+  .table-wrap tbody tr:hover td {
+    background: transparent;
+  }
+
+  .table-wrap tbody tr:hover {
+    background: var(--surface3);
   }
 
   .table-wrap tbody td {
-    padding: 4px;
+    padding: 6px 4px;
+    background: transparent;
   }
 
   .table-wrap tbody td.col-desc {
