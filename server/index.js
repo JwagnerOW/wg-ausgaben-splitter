@@ -37,7 +37,7 @@ const upload = multer({
 async function toImagePath(filePath, mimetype) {
   if (mimetype !== "application/pdf") return filePath;
   const outPath = filePath + ".page1.png";
-  const doc = pdf(filePath, { scale: 2 });
+  const doc = await pdf(filePath, { scale: 2 });
   for await (const img of doc) {
     await fs.promises.writeFile(outPath, img);
     return outPath;
