@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 
 export default function Members({
   members,
@@ -8,11 +8,13 @@ export default function Members({
   onBuyerChange,
 }) {
   const [input, setInput] = useState("");
+  const inputRef = useRef(null);
 
   function handleAdd() {
     if (input.trim()) {
       onAdd(input);
       setInput("");
+      requestAnimationFrame(() => inputRef.current?.focus());
     }
   }
 
@@ -24,6 +26,7 @@ export default function Members({
 
       <div className="row member-add-row">
         <input
+          ref={inputRef}
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
