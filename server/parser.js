@@ -21,8 +21,16 @@ const DISCOUNT_RE =
 const PFAND_RE = /\bpfand\b/i;
 const PFAND_RETURN_RE = /pfandr[uü]ckgabe|leergut/i;
 const TOTAL_RE =
-  /^(summe|gesamt|zu zahlen|total\b|zwischensumme|bar\b|kartenzahlung|mastercard|visa|ec[- ]?karte|bezahlung|girocard|bezahlt|gegeben|r[uü]ckgeld|kreditkarte)/i;
-const ZU_ZAHLEN_RE = /zu zahlen\s+(-?\d{1,6}[,.]\d{2})/i;
+  /^(summe|gesamt|gesamtsumme|endbetrag|zu zahlen|total\b|zwischensumme|bar\b|kartenzahlung|mastercard|visa|ec[- ]?karte|bezahlung|girocard|bezahlt|gegeben|r[uü]ckgeld|kreditkarte)/i;
+const TOTAL_PATTERNS = [
+  { re: /zu zahlen\s*[:]?\s*(-?\d{1,6}[,.]\d{2})/i },
+  { re: /endbetrag\s*[:]?\s*(-?\d{1,6}[,.]\d{2})/i },
+  { re: /gesamtsumme\s*[:]?\s*(-?\d{1,6}[,.]\d{2})/i },
+  { re: /(?:^|\s)gesamt\s*[:]?\s*(-?\d{1,6}[,.]\d{2})/i },
+  { re: /total\s*[:]?\s*(-?\d{1,6}[,.]\d{2})/i },
+  { re: /(?:bar|ec[- ]?karte|kartenzahlung|girocard)\s+(-?\d{1,6}[,.]\d{2})/i },
+  { re: /(?<!zwischen)summe\s*[:]?\s*(-?\d{1,6}[,.]\d{2})/i },
+];
 const SKIP_RE =
   /^(ust|mwst|steuer|netto|brutto|datum|uhr(?:zeit)?|kasse|bon\b|beleg\b|filiale|markt\b|tel[.:]|fax|www\.|http|vielen dank|tse|ust-id|str\.|plz|scheck|trinkgeld|eur$|\*{3,}|={3,}|-{5,}|_{3,})/i;
 const NOISE_RE = /^-?\d{1,3}\s*[xX×]\s+\d/;
@@ -166,14 +174,18 @@ function validateQtyLine(line, extractedTotal) {
 }
 
 function extractReceiptTotal(text) {
-  let m = text.match(ZU_ZAHLEN_RE);
-  if (m) return parseGermanFloat(m[1]);
-  // Fallback: "zu zahlen" may be on previous line (OCR line break)
-  const idx = text.search(/\bzu zahlen\b/i);
-  if (idx >= 0) {
-    const tail = text.slice(idx).replace(/zu zahlen\s*/i, "");
-    const numMatch = tail.match(/^(-?\d{1,6}[,.]\d{2})/m);
-    if (numMatch) return parseGermanFloat(numMatch[1]);
+  for (const { re } of TOTAL_PATTERNS) {
+    const m = text.match(re);
+    if (m) return parseGermanFloat(m[1]);
+  }
+  // Fallback: "zu zahlen" / "gesamt" etc. may be split across lines (OCR)
+  for (const kw of [/\bzu zahlen\b/i, /\bgesamtsumme\b/i, /\bendbetrag\b/i, /\btotal\b/i]) {
+    const idx = text.search(kw);
+    if (idx >= 0) {
+      const tail = text.slice(idx).replace(kw, "").replace(/^\s*[:]?\s*/, "");
+      const numMatch = tail.match(/^(-?\d{1,6}[,.]\d{2})/m);
+      if (numMatch) return parseGermanFloat(numMatch[1]);
+    }
   }
   return null;
 }
