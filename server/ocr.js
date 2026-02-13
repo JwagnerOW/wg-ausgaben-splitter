@@ -12,20 +12,30 @@ async function preprocessImage(imagePath) {
   const h = meta.height || 600;
   console.log(`  [Sharp] Original: ${w}x${h}`);
 
-  const minWidth = 2000;
-  let p = sharp(imagePath);
+  const minWidth = 1500;
+  const maxHeight = 3500;
+  let targetW = w;
+  let targetH = h;
   if (w < minWidth) {
-    const scale = Math.ceil(minWidth / w);
-    p = p.resize({
-      width: w * scale,
-      height: h * scale,
-      kernel: sharp.kernel.lanczos3,
-    });
-  } else if (w > 4000) {
-    p = p.resize({ width: 3000 });
+    const scale = minWidth / w;
+    targetW = minWidth;
+    targetH = Math.round(h * scale);
+  } else if (w > 3500) {
+    targetW = 3500;
+    targetH = Math.round(h * 3500 / w);
   }
+  if (targetH > maxHeight) {
+    targetH = maxHeight;
+    targetW = Math.round(targetW * maxHeight / targetH);
+  }
+  console.log(`  [Sharp] Target: ${targetW}x${targetH}`);
   const outPath = imagePath + ".ocr.png";
-  await p.grayscale().normalize().sharpen({ sigma: 1.0 }).toFile(outPath);
+  await sharp(imagePath)
+    .resize(targetW, targetH, { kernel: sharp.kernel.lanczos3 })
+    .grayscale()
+    .normalize()
+    .sharpen({ sigma: 1.0 })
+    .toFile(outPath);
   return outPath;
 }
 
