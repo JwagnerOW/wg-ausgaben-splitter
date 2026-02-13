@@ -73,7 +73,6 @@ export default function Scanner({ onResult }) {
           ref={fileRef}
           type="file"
           accept="image/*"
-          capture="environment"
           onChange={onInputChange}
           style={{ display: "none" }}
         />
